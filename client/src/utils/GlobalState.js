@@ -32,8 +32,10 @@ with the state object and dispatch the function provided as data for the value p
 const StoreProvider = ({ value = [], ...props }) => {
    const [ state, dispatch ] = useProductReducer({
       products: [],
+      cart: [],
+      cartOpen: false,
       categories: [],
-      currentCategory: '',
+      currentCategory: ''
    });
 
    // use this to confirm it works!
