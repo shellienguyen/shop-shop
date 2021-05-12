@@ -3,6 +3,8 @@ import { UPDATE_CATEGORIES, UPDATE_CURRENT_CATEGORY } from '../../utils/actions'
 import { useQuery } from '@apollo/react-hooks';
 import { QUERY_CATEGORIES } from "../../utils/queries";
 import { useStoreContext } from "../../utils/GlobalState";
+import { idbPromise } from '../../utils/helpers';
+
 
 function CategoryMenu() {
   // useStoreContext() Hook retrieves the current state from the global state object
@@ -12,7 +14,7 @@ function CategoryMenu() {
 
   // Because we only need the categories array out of our global state, we
   // simply destructure it out of state so we can use it to provide to our returning JSX.
-  const { data: categoryData } = useQuery( QUERY_CATEGORIES );
+  const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   /* Now when this component loads and the response from the useQuery() Hook
   returns, the useEffect() Hook notices that categoryData is not undefined anymore
@@ -34,7 +36,19 @@ function CategoryMenu() {
         type: UPDATE_CATEGORIES,
         categories: categoryData.categories
       });
+
+      categoryData.categories.forEach(category => {
+        idbPromise('categories', 'put', category);
+      });
     }
+    else if (!loading) {
+      idbPromise('categories', 'get').then(categories => {
+        dispatch({
+          type: UPDATE_CATEGORIES,
+          categories: categories
+        });
+      });
+    };
   }, [ categoryData, dispatch ]);
 
   const handleClick = id => {
