@@ -1,24 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from '@apollo/react-hooks';
-
 import { QUERY_PRODUCTS } from "../utils/queries";
 import spinner from '../assets/spinner.gif'
+import { useStoreContext } from "../utils/GlobalState";
+import { UPDATE_PRODUCTS } from "../utils/actions";
 
 function Detail() {
+  const [state, dispatch] = useStoreContext();
   const { id } = useParams();
 
   const [currentProduct, setCurrentProduct] = useState({})
 
   const { loading, data } = useQuery(QUERY_PRODUCTS);
 
-  const products = data?.products || [];
+  const { products } = state;
 
+  /* useEffect() Hook here has to check for a couple of things. It first checks to
+  see if there's data in our global state's products array. If there is, we use it
+  to figure out which product is the current one that we want to display. It does
+  this finding the one with the matching _id value that we grabbed from the
+  useParams() Hook */
   useEffect(() => {
     if (products.length) {
       setCurrentProduct(products.find(product => product._id === id));
+    } else if (data) {
+      dispatch({
+        type: UPDATE_PRODUCTS,
+        products: data.products
+      });
     }
-  }, [products, id]);
+  }, [products, data, dispatch, id]);
 
   return (
     <>
