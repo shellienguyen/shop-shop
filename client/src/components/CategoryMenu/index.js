@@ -10,7 +10,7 @@ function CategoryMenu() {
   // useStoreContext() Hook retrieves the current state from the global state object
   // dispatch method updates state
   const [ state, dispatch ] = useStoreContext();
-  const { categories } = state;
+  //const { categories } = state;
 
   // Because we only need the categories array out of our global state, we
   // simply destructure it out of state so we can use it to provide to our returning JSX.
